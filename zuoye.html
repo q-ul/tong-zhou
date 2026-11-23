@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>红包满减之后：大学生外卖账单省下了还是花多了 · 数据新闻可视化</title>
+<style>
+  :root{
+    --bg:#FAF6F1;
+    --card:#FFFFFF;
+    --ink:#2B2622;
+    --sub:#6B625B;
+    --line:#EDE4DA;
+    --orange:#E8632A;
+    --orange-2:#F2A65A;
+    --orange-3:#FBD9BF;
+    --green:#5C9A6E;
+    --red:#C75B4A;
+    --dark:#3A2E28;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:#F0E9E1;
+    font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",sans-serif;
+    color:var(--ink);
+    padding:32px 16px;
+  }
+  .poster{
+    max-width:860px;margin:0 auto;background:var(--bg);
+    border-radius:24px;overflow:hidden;box-shadow:0 12px 40px rgba(80,50,30,.12);
+  }
+  /* 报头 */
+  .masthead{
+    background:var(--dark);color:#fff;padding:46px 44px 38px;
+  }
+  .masthead .kicker{
+    display:inline-block;font-size:13px;letter-spacing:3px;color:var(--orange-2);
+    border:1px solid rgba(242,166,90,.5);border-radius:999px;padding:5px 14px;margin-bottom:20px;
+  }
+  .masthead h1{font-size:31px;line-height:1.4;font-weight:800;margin-bottom:18px;}
+  .masthead .lead{font-size:15px;line-height:1.9;color:#EDE4DA;max-width:680px;}
+  .masthead .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px;}
+  .masthead .meta span{
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);
+    padding:6px 14px;border-radius:999px;font-size:13px;color:#F3ECE3;
+  }
+  /* 正文 */
+  .article{padding:34px 44px 0;}
+  .section{margin-bottom:34px;}
+  .section h2{
+    font-size:20px;font-weight:800;margin-bottom:14px;color:var(--dark);
+    padding-left:12px;border-left:4px solid var(--orange);
+  }
+  .section p{font-size:15px;line-height:1.95;color:#3D3631;margin-bottom:14px;}
+  .section p .hl{color:var(--orange);font-weight:700;}
+  /* 图表卡片 */
+  .chart-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;margin:16px 0 6px;
+  }
+  .chart-card h3{font-size:14px;font-weight:700;margin-bottom:4px;}
+  .chart-card .note{font-size:12px;color:var(--sub);margin-bottom:16px;}
+  .bar-row{display:flex;align-items:center;margin-bottom:14px;}
+  .bar-row:last-child{margin-bottom:0;}
+  .bar-label{width:150px;font-size:13px;flex-shrink:0;}
+  .bar-track{flex:1;background:#F3ECE3;border-radius:8px;height:26px;overflow:hidden;}
+  .bar-fill{
+    height:100%;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;
+    padding-right:10px;color:#fff;font-size:12px;font-weight:700;background:var(--orange);min-width:42px;
+  }
+  .bar-fill.alt{background:var(--orange-2);}
+  .bar-fill.soft{background:var(--orange-3);color:var(--ink);}
+  .bar-fill.green{background:var(--green);}
+  .bar-fill.red{background:var(--red);}
+  /* 冲突对照 */
+  .versus{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 6px;}
+  .vs-card{border-radius:var(--radius);padding:24px;text-align:center;}
+  .vs-card.save{background:#EDF4EE;border:1px solid #D6E7D9;}
+  .vs-card.spend{background:#F9ECEA;border:1px solid #EFCFCB;}
+  .vs-card .num{font-size:32px;font-weight:800;}
+  .vs-card.save .num{color:var(--green);}
+  .vs-card.spend .num{color:var(--red);}
+  .vs-card .label{font-size:13px;color:var(--sub);margin-top:8px;line-height:1.6;}
+  /* 建议 */
+  .advice{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;}
+  .advice ul{list-style:none;}
+  .advice li{font-size:14px;line-height:1.85;margin-bottom:13px;padding-left:22px;position:relative;}
+  .advice li:last-child{margin-bottom:0;}
+  .advice li::before{content:"";position:absolute;left:0;top:11px;width:8px;height:8px;border-radius:50%;background:var(--orange);}
+  .advice li b{color:var(--orange);}
+  .observe{
+    margin-top:16px;padding:18px 22px;background:var(--orange-3);border-radius:12px;
+    font-size:14px;line-height:1.8;color:var(--dark);
+  }
+  /* 来源 */
+  .source{
+    margin:30px 44px 36px;background:#F6EEE6;border-radius:var(--radius);
+    padding:20px 24px;font-size:12px;color:var(--sub);line-height:1.9;
+  }
+  .source b{color:var(--ink);}
+  @media (max-width:720px){
+    .masthead{padding:30px 24px;}
+    .article{padding:26px 24px 0;}
+    .source{margin:26px 24px 28px;}
+    .versus{grid-template-columns:1fr;}
+    .bar-label{width:104px;font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- 报头 -->
+  <header class="masthead">
+    <div class="kicker">数据新闻 · 可视化报道</div>
+    <h1>红包满减之后，大学生的外卖账单省下了还是花多了？</h1>
+    <p class="lead">点开外卖软件，先领红包、再凑满减，是不少大学生熟悉的点餐流程。本组以本校在校大学生为对象，回收 100 份有效问卷，观察 2026 年 10 月 11 日至 11 月 11 日间，外卖优惠如何影响学生的点餐频次与支出。问卷给出的答案并不一致：有人确实省下了生活费，也有人被优惠带着多点了餐。</p>
+    <div class="meta">
+      <span>有效问卷 100 份</span>
+      <span>本校在校大学生</span>
+      <span>2026.10.11 — 11.11</span>
+    </div>
+  </header>
+
+  <div class="article">
+
+    <!-- 第一节：现象 -->
+    <section class="section">
+      <h2>外卖，已经是校园里的日常</h2>
+      <p>点开外卖软件，先领红包、再看满减，把餐品凑到刚好达到优惠门槛——这是不少大学生熟悉的点餐流程。对很多学生来说，外卖早已不是偶尔改善伙食，而是日常饮食的一部分；雨天、不想下楼，或者赶时间时，外卖往往是第一选择。</p>
+      <p>本组正是从这一常见场景切入，围绕外卖平台的满减、红包、优惠券和会员折扣，考察优惠活动如何影响学生的点餐频次与实际支出。问卷显示，<span class="hl">65% 的受访者每周至少点一次外卖</span>，多数人月外卖花费在 300 元以内，外卖开支已是部分学生生活费里一笔固定的开销。</p>
+      <div class="chart-card">
+        <h3>受访者平均每周点几次外卖</h3>
+        <div class="note">第2题 · 单选 · 100 人次</div>
+        <div class="bar-row">
+          <div class="bar-label">0 次</div>
+          <div class="bar-track"><div class="bar-fill soft" style="width:35%">35%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">1～2 次</div>
+          <div class="bar-track"><div class="bar-fill alt" style="width:20%">20%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">3～5 次</div>
+          <div class="bar-track"><div class="bar-fill" style="width:33%">33%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">6 次及以上</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:12%">12%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第二节：优惠使用 -->
+    <section class="section">
+      <h2>优惠，几乎成了点餐的标配</h2>
+      <p>正因为开支相对固定，价格往往直接影响下单选择。问卷中，<span class="hl">85% 的受访者点外卖时会用上优惠券、红包或满减</span>，红包是最常被使用的形式，其次是会员折扣和优惠券。学生一边比价，一边也在平台设定的满减门槛和推送规则里做选择：优惠怎么展示、门槛怎么设、红包什么时候弹出，都会影响最终端上桌的餐品和花出去的钱。</p>
+      <div class="chart-card">
+        <h3>点外卖时是否使用优惠券、红包或满减</h3>
+        <div class="note">第4题 · 单选 · 100 人次</div>
+        <div class="bar-row">
+          <div class="bar-label">每次都会使用</div>
+          <div class="bar-track"><div class="bar-fill" style="width:30%">30%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">经常使用</div>
+          <div class="bar-track"><div class="bar-fill alt" style="width:27%">27%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">偶尔使用</div>
+          <div class="bar-track"><div class="bar-fill soft" style="width:28%">28%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">从不使用</div>
+          <div class="bar-track"><div class="bar-fill soft" style="width:15%">15%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第三节：核心冲突 -->
+    <section class="section">
+      <h2>核心疑问：优惠到底省没省下来</h2>
+      <p>单笔餐价被优惠压低了，会不会同时抬高点餐频次和总支出？这是本次调查最想回答的问题。问卷里，两种判断同时存在——有人觉得优惠确实减轻了开支，也有人没感到省下多少，甚至觉得自己花得更多了。</p>
+      <div class="versus">
+        <div class="vs-card save">
+          <div class="num">55%</div>
+          <div class="label">觉得优惠确实减轻了开支<br>（节省很多 32% + 节省一部分 23%）</div>
+        </div>
+        <div class="vs-card spend">
+          <div class="num">45%</div>
+          <div class="label">没感到明显省钱，甚至反增消费<br>（不明显 23% + 反而增加 22%）</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>是否会因为有优惠而增加点餐次数</h3>
+        <div class="note">第6题 · 单选 · 100 人次 · 合计 57% 会因优惠多点餐</div>
+        <div class="bar-row">
+          <div class="bar-label">经常会</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:32%">32%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">偶尔会</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:25%">25%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">很少会</div>
+          <div class="bar-track"><div class="bar-fill soft" style="width:23%">23%</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">完全不会</div>
+          <div class="bar-track"><div class="bar-fill soft" style="width:20%">20%</div></div>
+        </div>
+      </div>
+      <p style="margin-top:16px">超过半数受访者承认会因优惠多点餐，近半数并没有真正省下钱；近半数人表示，优惠让自己更愿意点外卖，或增加了原本不必要的消费。也有一部分受访者借优惠筛掉价格偏高的商家，反而变得更注重比价。</p>
+    </section>
+
+    <!-- 第四节：建议 -->
+    <section class="section">
+      <h2>怎么看待这件事</h2>
+      <div class="advice">
+        <ul>
+          <li><b>对学生：</b>下单前先区分“确实需要”和“为凑单而加购”，结合生活费设定每月外卖预算，比较不同平台与商家的实际到手价格，对会员折扣和连续满减先核算再决定。</li>
+          <li><b>对平台：</b>优惠规则、满减门槛与凑单提示应清晰透明，减少容易被忽略的附加条件和诱导性推送，让学生结账前就能看清真实价格。</li>
+          <li><b>对学校：</b>引导学生树立理性、适度的消费观，帮助学生学习记录和管理个人开支，在面对各类促销时保持判断。</li>
+        </ul>
+      </div>
+      <div class="observe">优惠本身是中性的价格工具。真正值得追问的是：每用一次优惠，学生究竟省下了什么，又多付了什么。</div>
+    </section>
+
+  </div>
+
+  <!-- 来源与局限 -->
+  <section class="source">
+    <b>数据来源：</b>本组线上匿名问卷，有效样本 100 份，调查对象为本校在校大学生，调查窗口 2026 年 10 月 11 日至 11 月 11 日；题目涵盖年级、每周点餐次数、每月外卖支出、优惠使用频率与类型、优惠对点餐次数及消费习惯的影响。<br>
+    <b>样本结构：</b>大一 24%、大二 36%、大三 27%、大四及以上 13%。<br>
+    <b>可拓展公开渠道：</b>国家统计局 stats.gov.cn、工业和信息化部 miit.gov.cn、民政部 mca.gov.cn、市场监督管理总局 samr.gov.cn、CNNIC cnnic.cn、四川省统计局 tjj.sc.gov.cn、成都市统计局 cdstats.chengdu.gov.cn、成都市公共数据开放平台 chengdu.gov.cn/data/portal、世界银行开放数据 data.worldbank.org。<br>
+    <b>样本局限：</b>样本仅来自本校，以受访者自报为主，未核对个人订单流水；图中比例为样本内占比，不代表全体大学生消费情况。
+  </section>
+
+</div>
+</body>
+</html>
